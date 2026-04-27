@@ -2,94 +2,79 @@ import cv2
 import numpy as np
 
 
-# ------------------ STEP 1: Convert payload to binary ------------------
+# Convert payload → binary
 def to_binary(data: bytes) -> str:
     return ''.join(format(byte, '08b') for byte in data)
 
 
-# ------------------ STEP 2: Edge Detection (AI-like decision) ------------------
-def get_edge_mask(image):
-    gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+# Generate random pixel positions
+def generate_positions(image_shape, total_bits, seed):
+    h, w, c = image_shape
+    total_pixels = h * w * c
 
-    # Canny edge detection → finds high-frequency regions
-    edges = cv2.Canny(gray, 100, 200)
+    if total_bits > total_pixels:
+        raise ValueError("❌ Not enough space in image!")
 
-    return edges
+    np.random.seed(seed)
+
+    indices = np.random.choice(total_pixels, total_bits, replace=False)
+
+    return indices
 
 
-# ------------------ STEP 3: Embed data into image ------------------
-def embed_data(image_path, payload, output_path):
+# ------------------ EMBED ------------------
+def embed_data(image_path, payload, output_path, seed=42):
     image = cv2.imread(image_path)
 
     if image is None:
-        raise ValueError("❌ Error: Image not found!")
-
-    edges = get_edge_mask(image)
+        raise ValueError("❌ Image not found!")
 
     binary_data = to_binary(payload)
     data_len = len(binary_data)
 
     print(f"\n📊 Total bits to embed: {data_len}")
 
-    idx = 0
+    flat_image = image.flatten()
 
-    for i in range(image.shape[0]):
-        for j in range(image.shape[1]):
+    # Generate random positions
+    positions = generate_positions(image.shape, data_len, seed)
 
-            # Only embed in edge regions (smart decision)
-            if True:
+    for i, pos in enumerate(positions):
+        pixel = flat_image[pos]
+        flat_image[pos] = (pixel & 254) | int(binary_data[i])
 
-                for k in range(3):  # RGB channels
-                    if idx < data_len:
-                        pixel = image[i, j, k]
+    stego_image = flat_image.reshape(image.shape)
 
-                        # Replace LSB with data bit
-                        image[i, j, k] = (pixel & 254) | int(binary_data[idx])
+    cv2.imwrite(output_path, stego_image)
 
-                        idx += 1
-
-                    else:
-                        break
-
-    if idx < data_len:
-        print("⚠️ Warning: Image may not have enough capacity!")
-
-    cv2.imwrite(output_path, image)
-
-    print(f"✅ Data successfully embedded in {output_path}")
-    print(f"📊 Total bits embedded: {idx}")
+    print("✅ Data embedded using RANDOM positions")
+    print(f"📊 Total bits embedded: {data_len}")
 
 
-# ------------------ STEP 4: Extract data from image ------------------
-def extract_data(image_path, data_length):
+# ------------------ EXTRACT ------------------
+def extract_data(image_path, data_length, seed=42):
     image = cv2.imread(image_path)
 
     if image is None:
-        raise ValueError("❌ Error: Image not found!")
+        raise ValueError("❌ Image not found!")
 
-    edges = get_edge_mask(image)
+    flat_image = image.flatten()
+
+    # SAME positions using SAME seed
+    positions = generate_positions(image.shape, data_length, seed)
 
     bits = []
 
-    for i in range(image.shape[0]):
-        for j in range(image.shape[1]):
+    for pos in positions:
+        bits.append(str(flat_image[pos] & 1))
 
-            if True:
+    binary_data = ''.join(bits)
 
-                for k in range(3):
-                    bits.append(str(image[i, j, k] & 1))
+    extracted_bytes = bytes(
+        int(binary_data[i:i+8], 2)
+        for i in range(0, len(binary_data), 8)
+    )
 
-                    if len(bits) == data_length:
-                        binary_data = ''.join(bits)
+    print("✅ Data extracted using SAME random positions")
 
-                        # Convert binary → bytes
-                        extracted_bytes = bytes(
-                            int(binary_data[i:i+8], 2)
-                            for i in range(0, len(binary_data), 8)
-                        )
-
-                        print(f"✅ Data successfully extracted")
-                        return extracted_bytes
-
-    print("⚠️ Warning: Could not extract full data!")
-    return None
+    return extracted_bytes

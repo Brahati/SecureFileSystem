@@ -36,6 +36,8 @@ print(tag)
 
 print(f"\n⏱ AES Encryption Time: {end_time - start_time:.6f} seconds")
 
+seed = int.from_bytes(key[:4], 'big')
+print("🔑 Seed Generated from AES key")
 
 # ------------------ STEP 3: RSA KEY GENERATION ------------------
 print("\n🔐 GENERATING RSA KEYS...")
@@ -68,7 +70,8 @@ print("\n💾 Encrypted payload saved to data/output/encrypted.bin")
 embed_data(
     image_path="data/input/cover.png",
     payload=payload,
-    output_path="data/output/stego.png"
+    output_path="data/output/stego.png",
+    seed=seed
 )
 
 print("\n🖼️ Payload hidden inside image: data/output/stego.png")
@@ -84,7 +87,8 @@ print("\n🔓 STARTING DECRYPTION PROCESS...\n")
 # ------------------ STEP 7: EXTRACT PAYLOAD ------------------
 payload_extracted = extract_data(
     image_path="data/output/stego.png",
-    data_length=payload_length * 8
+    data_length=payload_length * 8,
+    seed=seed
 )
 
 # 🔥 DEBUG CHECK (CRUCIAL)
