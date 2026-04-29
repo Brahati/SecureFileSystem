@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="main">
+
+    <!-- SIDEBAR -->
+    <div class="sidebar">
+        <h3>Encryption Hub</h3>
+        <button onclick="window.location.href='/send'">Send File</button>
+        <button onclick="window.location.href='/receive'">Received Files</button>
+    </div>
+
+    <!-- CONTENT -->
+    <div class="content">
+
+        <div class="card">
+            <h2>Received Files</h2>
+
+            {% if files|length == 0 %}
+                <p>No files received yet</p>
+            {% else %}
+
+                <div class="file-grid">
+
+                    {% for file in files %}
+                    <div class="file-card">
+
+                        <!-- IMAGE PREVIEW -->
+                        <img src="/{{ file[1] }}" alt="stego image">
+
+                        <!-- FILE NAME -->
+                        <p class="file-name">
+                            {{ file[1].split('/')[-1] }}
+                        </p>
+
+                        <!-- ACTIONS -->
+                        <div class="file-actions">
+                            <a href="/decrypt/{{ file[0] }}" class="btn">Decrypt</a>
+                            <a href="/delete/{{ file[0] }}" class="btn delete">Delete</a>
+                        </div>
+
+                    </div>
+                    {% endfor %}
+
+                </div>
+
+            {% endif %}
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

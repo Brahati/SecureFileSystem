@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="main">
+
+    <!-- SIDEBAR -->
+    <div class="sidebar">
+        <h3 style="color:white;">Dashboard</h3>
+
+        <button onclick="showSection('send')">Send File</button>
+        <button onclick="showSection('receive')">Received Files</button>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div class="content">
+
+        <div class="card">
+
+            <h2>Send File</h2>
+
+            <form method="POST" enctype="multipart/form-data">
+
+                <!-- RECEIVER -->
+                <div class="form-group">
+                    <label>Receiver</label>
+                    <select name="receiver">
+                        <option value="user1">User 1</option>
+                        <option value="user2">User 2</option>
+                    </select>
+                </div>
+
+                <!-- FILE UPLOAD -->
+                <div class="form-group">
+                    <label>File</label>
+
+                    <input type="file" name="file" id="fileInput">
+
+                    <label for="fileInput" class="file-upload">
+                    <span id="fileText">📁 Click to upload file</span>
+                    </label>
+                    </div>
+
+                <!-- SUBMIT -->
+                <button type="submit" class="btn">Encrypt & Send</button>
+
+            </form>
+
+        </div>
+
+    </div>
+
+</div>
+
+<!-- FILE NAME PREVIEW SCRIPT -->
+<script>
+const input = document.getElementById("fileInput");
+const text = document.getElementById("fileText");
+
+input.addEventListener("change", function() {
+    if (this.files.length > 0) {
+        text.textContent = this.files[0].name;
+    }
+});
+</script>
+
+{% endblock %}

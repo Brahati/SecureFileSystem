@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="main">
+
+    <!-- SIDEBAR -->
+    <div class="sidebar">
+        <h3 style="color:white;">Console</h3>
+
+        <button onclick="showSection('send')">Send File</button>
+        <button onclick="showSection('receive')">Received Files</button>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div class="content">
+
+        <!-- DEFAULT -->
+        <div class="card" id="default">
+            <h2>Welcome 👋</h2>
+            <p>Select an option from the sidebar</p>
+        </div>
+
+        <!-- SEND -->
+        <div id="send" class="card" style="display:none;">
+            <h2>Send File</h2>
+
+            <form method="POST" action="/send" enctype="multipart/form-data">
+                <select name="receiver">
+                    <option value="user2">User 2</option>
+                </select>
+
+                <input type="file" name="file">
+
+                <button class="btn">Encrypt & Send</button>
+            </form>
+        </div>
+
+        <!-- RECEIVE -->
+        <div id="receive" class="card" style="display:none;">
+            <h2>Received Files</h2>
+
+            <table>
+                {% for file in files %}
+                <tr>
+                    <td>{{ file[1].split('/')[-1] }}</td>
+                    <td>
+                        <a href="/decrypt/{{ file[0] }}" class="btn">Decrypt</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </table>
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+function showSection(id) {
+    document.getElementById("default").style.display = "none";
+    document.getElementById("send").style.display = "none";
+    document.getElementById("receive").style.display = "none";
+
+    document.getElementById(id).style.display = "block";
+}
+</script>
+
+{% endblock %}

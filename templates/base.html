@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>SecureShare</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+<!-- NAVBAR -->
+<div class="navbar">
+    <h2>🔐 SecureShare</h2>
+    {% if session.get('user') %}
+        <div>
+            <span>{{ session['user'] }}</span>
+            <a href="/logout" style="color:white; margin-left:15px;">Logout</a>
+        </div>
+    {% endif %}
+</div>
+
+<!-- MAIN CONTENT -->
+{% block content %}{% endblock %}
+
+
+</body>
+</html>
