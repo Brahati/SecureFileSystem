@@ -23,7 +23,7 @@ def setup_routes(app):
 
         if response == expected:
             session["user"] = username
-            return redirect("/dashboard")
+            return redirect("/receive")
 
         return "❌ Login Failed"
 
@@ -48,7 +48,8 @@ def setup_routes(app):
     def send():
 
         if request.method == "GET":
-            return render_template("send.html")
+            usernames = list(USER_SECRETS.keys())
+            return render_template("send.html", usernames=usernames)
 
         receiver = request.form["receiver"]
         file = request.files["file"]

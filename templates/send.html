@@ -2,53 +2,39 @@
 
 {% block content %}
 
-<div class="main">
+<div class="card">
 
-    <!-- SIDEBAR -->
-    <div class="sidebar">
-        <h3 style="color:white;">Dashboard</h3>
+    <h2>Send File</h2>
 
-        <button onclick="showSection('send')">Send File</button>
-        <button onclick="showSection('receive')">Received Files</button>
-    </div>
+    <form method="POST" enctype="multipart/form-data">
 
-    <!-- MAIN CONTENT -->
-    <div class="content">
-
-        <div class="card">
-
-            <h2>Send File</h2>
-
-            <form method="POST" enctype="multipart/form-data">
-
-                <!-- RECEIVER -->
-                <div class="form-group">
-                    <label>Receiver</label>
-                    <select name="receiver">
-                        <option value="user1">User 1</option>
-                        <option value="user2">User 2</option>
-                    </select>
-                </div>
-
-                <!-- FILE UPLOAD -->
-                <div class="form-group">
-                    <label>File</label>
-
-                    <input type="file" name="file" id="fileInput">
-
-                    <label for="fileInput" class="file-upload">
-                    <span id="fileText">📁 Click to upload file</span>
-                    </label>
-                    </div>
-
-                <!-- SUBMIT -->
-                <button type="submit" class="btn">Encrypt & Send</button>
-
-            </form>
-
+        <!-- RECEIVER -->
+        <div class="form-group">
+            <label>Receiver</label>
+            <select name="receiver">
+                {% for username in usernames %}
+                    {% if username != session['user'] %}
+                        <option value="{{ username }}">{{ username|capitalize }}</option>
+                    {% endif %}
+                {% endfor %}
+            </select>
         </div>
 
-    </div>
+        <!-- FILE UPLOAD -->
+        <div class="form-group">
+            <label>File</label>
+
+            <input type="file" name="file" id="fileInput">
+
+            <label for="fileInput" class="file-upload">
+            <span id="fileText">📁 Click to upload file</span>
+            </label>
+            </div>
+
+        <!-- SUBMIT -->
+        <button type="submit" class="btn">Encrypt & Send</button>
+
+    </form>
 
 </div>
 

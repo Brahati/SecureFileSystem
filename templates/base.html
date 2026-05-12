@@ -19,7 +19,22 @@
 </div>
 
 <!-- MAIN CONTENT -->
-{% block content %}{% endblock %}
+{% if session.get('user') %}
+<div class="main">
+    <div class="sidebar">
+        <h3>Encryption Hub</h3>
+        <button onclick="window.location.href='/send'">Send File</button>
+        <button onclick="window.location.href='/receive'">Received Files</button>
+    </div>
+    <div class="content">
+{% endif %}
+
+    {% block content %}{% endblock %}
+
+{% if session.get('user') %}
+    </div>
+</div>
+{% endif %}
 
 
 </body>
