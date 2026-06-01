@@ -2,39 +2,56 @@
 
 {% block content %}
 
-<div class="card">
-    <h2>Received Files</h2>
+<div class="page-header">
+    <div>
+        <h2 class="page-title">Received Files</h2>
+        <p class="page-desc">Encrypted payloads waiting in your inbox. Decrypt to reveal the original file.</p>
+    </div>
+    <span class="badge badge-neutral">{{ files|length }} file{% if files|length != 1 %}s{% endif %}</span>
+</div>
 
-    {% if files|length == 0 %}
-        <p>No files received yet</p>
-    {% else %}
+{% if files|length == 0 %}
 
-        <div class="file-grid">
+<div class="card empty-card">
+    <div class="empty-state empty-state-lg">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="48" height="48"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+        <h3>No files received yet</h3>
+        <p>When someone sends you an encrypted file, it will appear here.</p>
+    </div>
+</div>
 
-            {% for file in files %}
-            <div class="file-card">
+{% else %}
 
-                <!-- IMAGE PREVIEW -->
-                <img src="/{{ file[1] }}" alt="stego image">
+<div class="file-grid">
 
-                <!-- FILE NAME -->
-                <p class="file-name">
-                    {{ file[1].split('/')[-1] }}
-                </p>
-
-                <!-- ACTIONS -->
-                <div class="file-actions">
-                    <a href="/decrypt/{{ file[0] }}" class="btn">Decrypt</a>
-                    <a href="/delete/{{ file[0] }}" class="btn delete">Delete</a>
-                </div>
-
-            </div>
-            {% endfor %}
-
+    {% for file in files %}
+    <article class="file-card">
+        <div class="file-thumb">
+            <img src="/{{ file[1] }}" alt="Encrypted stego preview for {{ file[1].split('/')[-1] }}">
+            <span class="file-badge">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="12" height="12"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                Encrypted
+            </span>
         </div>
-
-    {% endif %}
+        <div class="file-card-body">
+            <h3 class="file-name" title="{{ file[1].split('/')[-1] }}">{{ file[1].split('/')[-1] }}</h3>
+            <p class="file-date">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                Received recently
+            </p>
+            <div class="file-actions">
+                <a href="/decrypt/{{ file[0] }}" class="btn btn-primary btn-sm">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                    Decrypt
+                </a>
+                <a href="/delete/{{ file[0] }}" class="btn btn-danger-outline btn-sm">Delete</a>
+            </div>
+        </div>
+    </article>
+    {% endfor %}
 
 </div>
+
+{% endif %}
 
 {% endblock %}

@@ -1,41 +1,87 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>SecureShare</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <title>SecureShare — Encrypted File Transfer</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
+<body class="{% if session.get('user') %}app-auth{% else %}app-guest{% endif %}">
+<div class="page-shell">
+    <div class="background-canvas" aria-hidden="true">
+        <div class="bg-pattern"></div>
+        <div class="bg-glow glow-1"></div>
+        <div class="bg-glow glow-2"></div>
+    </div>
 
-<body>
+    <header class="navbar">
+        <div class="app-container navbar-inner">
+            <a href="{% if session.get('user') %}/dashboard{% else %}/{% endif %}" class="brand">
+                <div class="brand-mark" aria-hidden="true">
+                    <svg class="brand-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                        <rect x="9" y="9" width="6" height="5" rx="1"/>
+                        <path d="M12 9V7"/>
+                    </svg>
+                </div>
+                <span class="brand-name">SecureShare</span>
+            </a>
 
-<!-- NAVBAR -->
-<div class="navbar">
-    <h2>🔐 SecureShare</h2>
-    {% if session.get('user') %}
-        <div>
-            <span>{{ session['user'] }}</span>
-            <a href="/logout" style="color:white; margin-left:15px;">Logout</a>
+            {% if session.get('user') %}
+            <div class="user-area">
+                <div class="user-profile">
+                    <div class="user-avatar" aria-hidden="true">{{ session['user'][0]|upper }}</div>
+                    <span class="user-name">{{ session['user'] }}</span>
+                </div>
+                <a class="btn btn-outline btn-sm" href="/logout">Logout</a>
+            </div>
+            {% endif %}
         </div>
-    {% endif %}
+    </header>
+
+    <main class="app-container main-wrap">
+        <div class="layout {% if not session.get('user') %}layout-guest{% endif %}">
+            {% if session.get('user') %}
+            <button type="button" class="sidebar-toggle" id="sidebarToggle" aria-label="Toggle navigation">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h18M3 6h18M3 18h18"/></svg>
+            </button>
+            <aside class="sidebar" id="sidebar" aria-label="Application navigation">
+                <div class="sidebar-panel">
+                    <h2 class="sidebar-title">Encryption Hub</h2>
+                    <p class="sidebar-desc">Secure workflows for encrypted transfer and decryption.</p>
+                </div>
+                <nav class="sidebar-nav">
+                    <a href="/dashboard" class="nav-item {% if request.path == '/dashboard' %}active{% endif %}">
+                        <span class="nav-icon" aria-hidden="true">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+                        </span>
+                        Dashboard
+                    </a>
+                    <a href="/send" class="nav-item {% if request.path == '/send' %}active{% endif %}">
+                        <span class="nav-icon" aria-hidden="true">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                        </span>
+                        Send File
+                    </a>
+                    <a href="/receive" class="nav-item {% if request.path == '/receive' %}active{% endif %}">
+                        <span class="nav-icon" aria-hidden="true">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                        </span>
+                        Received Files
+                    </a>
+                </nav>
+            </aside>
+            {% endif %}
+
+            <section class="content page-enter">
+                {% block content %}{% endblock %}
+            </section>
+        </div>
+    </main>
 </div>
-
-<!-- MAIN CONTENT -->
-{% if session.get('user') %}
-<div class="main">
-    <div class="sidebar">
-        <h3>Encryption Hub</h3>
-        <button onclick="window.location.href='/send'">Send File</button>
-        <button onclick="window.location.href='/receive'">Received Files</button>
-    </div>
-    <div class="content">
-{% endif %}
-
-    {% block content %}{% endblock %}
-
-{% if session.get('user') %}
-    </div>
-</div>
-{% endif %}
-
-
+<script src="{{ url_for('static', filename='app.js') }}" defer></script>
 </body>
 </html>
